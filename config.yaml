@@ -1,0 +1,71 @@
+data:
+  path: "combined_data.csv"
+  text_column: "text"
+  label_column: "label"
+  test_size: 0.1
+  val_size: 0.1
+  random_seed: 42
+
+models:
+  names:
+    - "./local_models/google_electra-base-discriminator"
+    - "./local_models/FacebookAI_roberta-base"
+  max_length: 512
+
+lora:
+  ranks: [4, 8]
+  target_modules: ["query", "key", "value", "dense", "q_proj", "k_proj", "v_proj", "out_proj", "lin1", "lin2"]
+  alpha: "auto"
+  dropout: 0.1
+
+training:
+  batch_size: 16
+  auto_reduce_batch_size: true
+  min_batch_size: 4
+  learning_rate: 2e-4
+  epochs: 2
+  warmup_ratio: 0.1
+  weight_decay: 0.01
+  gradient_clipping: 1.0
+  use_mixed_precision: true
+  gradient_accumulation_steps: 1
+
+early_stopping:
+  patience: 2
+  monitor: "val_loss"
+  mode: "min"
+
+optuna:
+  enabled: false
+  n_trials: 20
+  optimize_params: ["learning_rate", "lora_rank", "warmup_ratio", "weight_decay"]
+  metric: "val_f1"
+
+evaluation:
+  threshold_tuning: true
+  target_precision: 0.95
+  num_error_examples: 10
+
+visualization:
+  dpi: 300
+  figure_sizes:
+    small: [8, 6]
+    medium: [12, 8]
+    large: [15, 10]
+
+spacy:
+  model: "en_core_web_sm"
+  auto_download: true
+
+paths:
+  models: "./models"
+  logs: "./logs"
+  tensorboard: "./tensorboard_logs"
+  visualizations: "./visualizations"
+  results: "./results"
+
+logging:
+  level: "INFO"
+  save_to_file: true
+
+device: "cuda"
