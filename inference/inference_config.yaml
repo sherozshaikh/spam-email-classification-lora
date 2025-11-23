@@ -1,0 +1,16 @@
+model:
+  base_model_name: "google/electra-base-discriminator"
+  adapter_path: "ssheroz/spam-email-classifier-electra-r4"
+  max_length: 512
+  device: "cuda"
+
+inference:
+  batch_size: 8
+  return_probabilities: true
+  confidence_threshold: 0.5
+
+output:
+  labels:
+    0: "HAM"
+    1: "SPAM"
+  verbose: true
